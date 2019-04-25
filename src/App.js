@@ -21,10 +21,9 @@ const Input = props => {
 const ListItem = props => {
   const listItemStyle = {
     listStyle: "none",
-    display: 'inline'
   };
 
-  return <div><span>x</span><li style={listItemStyle}>{props.text}</li></div>;
+  return <li style={listItemStyle}>{props.text}</li>
 };
 
 class List extends React.Component {
@@ -32,12 +31,9 @@ class List extends React.Component {
     super(props);
     this.state = {
       input: "",
-      name: props.name,
-      list: props.list
+      list: ls.get(props.name) || []
     };
-    if (!ls.get(props.name)) {
-      ls.set(props.name, []);
-    }
+    ls.set(props.name, this.state.list);
   }
 
   onSaveHandler() {
@@ -45,8 +41,7 @@ class List extends React.Component {
       ...this.state,
       list: [...this.state.list, this.state.input]
     })
-    ls.set(this.state.name, [...this.state.list, this.state.input])
-    
+    ls.set(this.props.name, [...this.state.list, this.state.input])
   }
 
   onChangeHandler(e) {
@@ -59,13 +54,13 @@ class List extends React.Component {
   render() {
     return (
       <div>
-        <h4>{this.state.name}</h4>
+        <h4>{this.props.name}</h4>
         <Input
           changeHandler={this.onChangeHandler.bind(this)}
           clickHandler={this.onSaveHandler.bind(this)}
         />
         <ul>
-          {ls.get(this.state.name).map((item, index) => {
+          {this.state.list.map((item, index) => {
             return <ListItem key={index} text={item}/>;
           })}
         </ul>
@@ -128,11 +123,12 @@ class App extends React.Component {
 
   render = () => {
     let activeView = null;
-    if (this.state.view === "search") {
-      activeView = <h1>Search View</h1>;
-    } else if (this.state.view === "list") {
+    if (this.state.view === "list") {
       activeView = (
+        <div>
+        <button onClick={this.backButtonHandler.bind(this)} >go back</button>
         <List name={this.state.current.name} list={this.state.current.list} />
+        </div>
       );
     } else if (this.state.view === "categories") {
       activeView = (
@@ -141,7 +137,7 @@ class App extends React.Component {
     }
 
     return <div className="App">
-    <button onClick={this.backButtonHandler.bind(this)} >go back</button>
+   
     {activeView}
     </div>;
   };
