@@ -1,114 +1,149 @@
 import React from "react";
+import ls from 'local-storage';
 
 const Input = props => {
-  const containerStyle = {
-    marginTop: "30px",
-    textAlign: "center",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: "20px"
-  };
-
-  const textInputStyle = {
-    width: "500px",
-    height: "40px",
-    marginRight: "10px",
-    fontSize: "20px",
-    padding: "10px",
-    boxSizing: "border-box"
-  };
-
-  const buttonStyle = {
-    height: "40px",
-    width: "100px",
-    fontSize: "20px",
-    border: "3px solid pink",
-    backgroundColor: "white",
-    borderRadius: "10px"
-  };
-
-  if (props.clearInput) {
-    document.querySelector("#item").value = "";
-  }
 
   return (
-    <div style={containerStyle}>
+    <div>
       <input
         type="text"
         id="item"
         name="item"
         placeholder="What did you want to buy?"
-        style={textInputStyle}
         onChange={props.changeHandler}
       />
 
-      <button
-        style={buttonStyle}
-        onClick={props.clickHandler}
-        disabled={props.empty}
-      >
-        Add
-      </button>
+      <button onClick={props.clickHandler}>Add</button>
     </div>
   );
 };
 
 const ListItem = props => {
   const listItemStyle = {
-    listStyle: "none"
+    listStyle: "none",
+    display: 'inline'
   };
 
-  return <li style={listItemStyle}>{props.text}</li>;
+  return <div><span>x</span><li style={listItemStyle}>{props.text}</li></div>;
 };
 
-const List = props => {
-  const listStyle = {
-    padding: "0"
-  };
+class List extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      input: "",
+      name: props.name,
+      list: props.list
+    };
+    if (!ls.get(props.name)) {
+      ls.set(props.name, []);
+    }
+  }
+
+  onSaveHandler() {
+    this.setState({
+      ...this.state,
+      list: [...this.state.list, this.state.input]
+    })
+    ls.set(this.state.name, [...this.state.list, this.state.input])
+    
+  }
+
+  onChangeHandler(e) {
+    this.setState({
+      ...this.state,
+      input: e.target.value
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <h4>{this.state.name}</h4>
+        <Input
+          changeHandler={this.onChangeHandler.bind(this)}
+          clickHandler={this.onSaveHandler.bind(this)}
+        />
+        <ul>
+          {ls.get(this.state.name).map((item, index) => {
+            return <ListItem key={index} text={item}/>;
+          })}
+        </ul>
+      </div>
+    );
+  }
+}
+
+const Categories = props => {
+  const categories = [
+    "Meat & Poultry",
+    "Bakery",
+    "Produce",
+    "Household",
+    "Clothing"
+  ];
 
   return (
-    <ul style={listStyle}>
-      {props.items.map((item, index) => (
-        <ListItem text={item} key={index} />
-      ))}
-    </ul>
+    <div>
+      <h4 style={{ marginBottom: "10px" }}>Categories</h4>
+      <ul>
+        {categories.map((item, index) => {
+          return (
+            <li key={index} onClick={props.clickHandler}>
+              {item}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 };
 
 class App extends React.Component {
-  state = {
-    listItems: ["bananas", "milk", "cookies"],
-    clearInput: false
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      view: "categories"
+    };
+    
+  }
 
-  clickHandler() {
+  categoriesClickHandler(e) {
     this.setState({
-      listItems: [this.state.item, ...this.state.listItems],
-      item: "",
-      clearInput: true
+      view: "list",
+      current: {
+        name: e.target.innerText,
+        list: []
+      }
     });
   }
 
-  changeHandler(e) {
-    this.setState({
-      item: e.target.value,
-      clearInput: false
+  backButtonHandler() {
+    console.log(ls.get(this.state.current.name));
+    this.setState ({
+      ...this.state,
+      view: "categories",
     });
   }
 
   render = () => {
-    return (
-      <div className="App">
-        <Input
-          changeHandler={this.changeHandler.bind(this)}
-          clickHandler={this.clickHandler.bind(this)}
-          clearInput={this.state.clearInput}
-          empty={!this.state.item}
-        />
-        <List items={this.state.listItems} />
-      </div>
-    );
+    let activeView = null;
+    if (this.state.view === "search") {
+      activeView = <h1>Search View</h1>;
+    } else if (this.state.view === "list") {
+      activeView = (
+        <List name={this.state.current.name} list={this.state.current.list} />
+      );
+    } else if (this.state.view === "categories") {
+      activeView = (
+        <Categories clickHandler={this.categoriesClickHandler.bind(this)} />
+      );
+    }
+
+    return <div className="App">
+    <button onClick={this.backButtonHandler.bind(this)} >go back</button>
+    {activeView}
+    </div>;
   };
 }
 export default App;
