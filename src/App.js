@@ -1,10 +1,23 @@
 import React from "react";
-import ls from 'local-storage';
+import ls from "local-storage";
 
 const Input = props => {
 
+  const container = {
+    position: 'fixed',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    height: '100px',
+    width: '200px',
+    backgroundColor: 'pink'
+  }
+
+
+
+
   return (
-    <div>
+    <div style={container}>
       <input
         type="text"
         id="item"
@@ -20,10 +33,10 @@ const Input = props => {
 
 const ListItem = props => {
   const listItemStyle = {
-    listStyle: "none",
+    listStyle: "none"
   };
 
-  return <li style={listItemStyle}>{props.text}</li>
+  return <li style={listItemStyle}>{props.text}</li>;
 };
 
 class List extends React.Component {
@@ -37,11 +50,24 @@ class List extends React.Component {
   }
 
   onSaveHandler() {
+    console.log(this.state.list);
     this.setState({
       ...this.state,
-      list: [...this.state.list, this.state.input]
-    })
-    ls.set(this.props.name, [...this.state.list, this.state.input])
+      list: [
+        ...this.state.list,
+        {
+          name: this.state.input,
+          done: false
+        }
+      ]
+    });
+    ls.set(this.props.name, [
+      ...this.state.list,
+      {
+        name: this.state.input,
+        done: false
+      }
+    ]);
   }
 
   onChangeHandler(e) {
@@ -52,16 +78,42 @@ class List extends React.Component {
   }
 
   render() {
+    const container = {
+      margin: "0 auto",
+      maxWidth: "250px",
+      color: "#EEE5E9"
+    };
+
+    const heading = {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center"
+    };
+
+    const title = {};
+
+    const backButton = {
+      cursor: "pointer"
+    };
+
     return (
-      <div>
-        <h4>{this.props.name}</h4>
+      <div style={container}>
+        <div style={heading}>
+          <i
+            onClick={this.props.backButtonHandler}
+            style={{ marginRight: "10px" }}
+            className="fas fa-arrow-left"
+          />
+          <h3>{this.props.name}</h3>
+          <i className="fas fa-plus-circle" />
+        </div>
         <Input
           changeHandler={this.onChangeHandler.bind(this)}
           clickHandler={this.onSaveHandler.bind(this)}
         />
         <ul>
           {this.state.list.map((item, index) => {
-            return <ListItem key={index} text={item}/>;
+            return <ListItem key={index} text={item.name} />;
           })}
         </ul>
       </div>
@@ -71,21 +123,79 @@ class List extends React.Component {
 
 const Categories = props => {
   const categories = [
-    "Meat & Poultry",
-    "Bakery",
-    "Produce",
-    "Household",
-    "Clothing"
+    { name: "Meats", icon: "fas fa-drumstick-bite", color: "#f4aa42" },
+    { name: "Bakery", icon: "fas fa-bread-slice", color: "#a9f441" },
+    { name: "Produce", icon: "fas fa-carrot", color: "#f44141" },
+    { name: "Household", icon: "fas fa-home", color: "#4182f4" },
+    { name: "Pantry", icon: "fas fa-cookie-bite", color: "#8e7cff" },
+    { name: "Dairy", icon: "fas fa-ice-cream", color: "#ffe500" }
   ];
 
+  const container = {
+    margin: "0 auto",
+    maxWidth: "250px",
+    color: "#EEE5E9"
+  };
+
+  const iconBackground = {
+    borderRadius: "50%",
+    backgroundColor: "pink",
+    color: "white",
+    height: "30px",
+    width: "30px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: "20px"
+  };
+
+  const header = {
+    textTransform: "uppercase",
+    letterSpacing: "3px",
+    fontWeight: "bold",
+    textAlign: "center"
+  };
+
+  const list = {
+    padding: "0"
+  };
+
+  const listItem = {
+    listStyle: "none",
+    background: "#353535",
+    margin: "10px 0px",
+    height: "40px",
+    borderRadius: "10px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "0px 10px",
+    boxSizing: "border-box",
+    cursor: "pointer"
+  };
+
   return (
-    <div>
-      <h4 style={{ marginBottom: "10px" }}>Categories</h4>
-      <ul>
+    <div style={container}>
+      <h3 style={header}>Categories</h3>
+      <ul style={list}>
         {categories.map((item, index) => {
           return (
-            <li key={index} onClick={props.clickHandler}>
-              {item}
+            <li style={listItem} key={index} onClick={props.clickHandler}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <div style={{ ...iconBackground, backgroundColor: item.color }}>
+                  <i className={item.icon} />
+                </div>
+                {item.name}
+              </div>
+              <div>
+                <i className="fas fa-arrow-right" />
+              </div>
             </li>
           );
         })}
@@ -100,7 +210,6 @@ class App extends React.Component {
     this.state = {
       view: "categories"
     };
-    
   }
 
   categoriesClickHandler(e) {
@@ -114,10 +223,9 @@ class App extends React.Component {
   }
 
   backButtonHandler() {
-    console.log(ls.get(this.state.current.name));
-    this.setState ({
+    this.setState({
       ...this.state,
-      view: "categories",
+      view: "categories"
     });
   }
 
@@ -126,8 +234,11 @@ class App extends React.Component {
     if (this.state.view === "list") {
       activeView = (
         <div>
-        <button onClick={this.backButtonHandler.bind(this)} >go back</button>
-        <List name={this.state.current.name} list={this.state.current.list} />
+          <List
+            name={this.state.current.name}
+            list={this.state.current.list}
+            backButtonHandler={this.backButtonHandler.bind(this)}
+          />
         </div>
       );
     } else if (this.state.view === "categories") {
@@ -136,10 +247,7 @@ class App extends React.Component {
       );
     }
 
-    return <div className="App">
-   
-    {activeView}
-    </div>;
+    return <div className="App">{activeView}</div>;
   };
 }
 export default App;
