@@ -14,8 +14,6 @@ const Input = props => {
   }
 
 
-
-
   return (
     <div style={container}>
       <input
@@ -163,8 +161,8 @@ const Categories = props => {
   const listItem = {
     listStyle: "none",
     background: "#353535",
-    margin: "10px 0px",
-    height: "40px",
+    margin: "20px 0px",
+    height: "50px",
     borderRadius: "10px",
     display: "flex",
     alignItems: "center",
@@ -180,7 +178,7 @@ const Categories = props => {
       <ul style={list}>
         {categories.map((item, index) => {
           return (
-            <li style={listItem} key={index} onClick={props.clickHandler}>
+            <li style={listItem} key={index} onClick={() => props.clickHandler(item.name)}>
               <div
                 style={{
                   display: "flex",
@@ -212,11 +210,11 @@ class App extends React.Component {
     };
   }
 
-  categoriesClickHandler(e) {
+  categoriesClickHandler(name) {
     this.setState({
       view: "list",
       current: {
-        name: e.target.innerText,
+        name: name,
         list: []
       }
     });
