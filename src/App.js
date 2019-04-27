@@ -5,34 +5,40 @@ const Input = props => {
   const container = {
     margin: "0 auto",
     display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    paddingLeft: "10px"
+    justifyContent: "space-between",
+    alignItems: "center"
   };
 
   const inputStyle = {
-    width: "80%",
-    height: "20px",
-    padding: "0"
+    width: "150px",
+    height: "30px",
+    padding: "0",
+    borderRadius: "10px",
+    border: "none",
+    paddingLeft: "10px",
+    fontSize: "0.9em"
   };
 
-  const buttonStyle = {
-    // width: '',
-    height: "25px",
-    background: "pink"
-  };
+  const icon = {
+    cursor: 'pointer'
+  }
+
+  if (props.clearInput) {
+    document.querySelector('#item').value = '';
+  }
 
   return (
     <div style={container}>
+      <i className="fas fa-arrow-left" onClick={props.backButtonHandler} style={icon}/>
       <input
         type="text"
         style={inputStyle}
         id="item"
         name="item"
         onChange={props.changeHandler}
+        placeHolder="Enter an item"
       />
-      <div style={buttonStyle} />
+      <i className="fas fa-plus-circle" onClick={props.clickHandler} style={icon}/>
     </div>
   );
 };
@@ -64,7 +70,7 @@ const ListItem = props => {
   };
 
   return (
-    <div style={container}>
+    <div style={container} >
       <i
         style={checkMark}
         className="fas fa-check"
@@ -87,13 +93,14 @@ class List extends React.Component {
     super(props);
     this.state = {
       input: "",
-      list: ls.get(props.name) || []
+      list: ls.get(props.name) || [],
+      clearInput: false
     };
     ls.set(props.name, this.state.list);
   }
 
   onSaveHandler() {
-    console.log(this.state.list);
+    if (!this.state.input) return;
     this.setState({
       ...this.state,
       list: [
@@ -102,7 +109,9 @@ class List extends React.Component {
           name: this.state.input,
           done: false
         }
-      ]
+      ],
+      input: "",
+      clearInput: true
     });
     ls.set(this.props.name, [
       ...this.state.list,
@@ -116,7 +125,8 @@ class List extends React.Component {
   onChangeHandler(e) {
     this.setState({
       ...this.state,
-      input: e.target.value
+      input: e.target.value,
+      clearInput: false
     });
   }
 
@@ -146,7 +156,7 @@ class List extends React.Component {
       margin: "0 auto",
       maxWidth: "250px",
       color: "#EEE5E9",
-      position: 'relative'
+      position: "relative"
     };
 
     const heading = {
@@ -168,24 +178,22 @@ class List extends React.Component {
 
     const backButton = {
       cursor: "pointer",
-      position: 'absolute',
-      top: '20px'
+      position: "absolute",
+      top: "20px"
     };
 
     return (
       <div style={container}>
-        <i
-          onClick={this.props.backButtonHandler}
-          style={backButton}
-          className="fas fa-arrow-left"
-        />
         <div style={heading}>
           <h3>{this.props.name}</h3>
           <div />
         </div>
+
         <Input
           changeHandler={this.onChangeHandler.bind(this)}
           clickHandler={this.onSaveHandler.bind(this)}
+          backButtonHandler={this.props.backButtonHandler.bind(this)}
+          clearInput={this.state.clearInput}
         />
         <ul style={list}>
           {this.state.list.map((item, index) => {
