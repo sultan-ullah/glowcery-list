@@ -304,11 +304,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      view: "list",
-      current: {
-        name: "Produce",
-        list: [{ name: "item1", done: false }, { name: "item2", done: false }]
-      }
+      view: "categories",
     };
   }
 
