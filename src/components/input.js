@@ -9,13 +9,14 @@ const input = props => {
   };
 
   const inputStyle = {
-    width: "150px",
+    width: "250px",
     height: "30px",
     padding: "0",
     borderRadius: "10px",
     border: "none",
     paddingLeft: "10px",
-    fontSize: "0.9em"
+    margin: '0px 20px',
+    fontSize: '0.7em'
   };
 
   const icon = {

@@ -12,7 +12,7 @@ const categories = props => {
 
   const container = {
     margin: "0 auto",
-    maxWidth: "250px",
+    maxWidth: "400px",
     color: "#EEE5E9"
   };
 

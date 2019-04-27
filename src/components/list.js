@@ -64,7 +64,7 @@ export default class List extends React.Component {
   render() {
     const container = {
       margin: "0 auto",
-      maxWidth: "250px",
+      maxWidth: "400px",
       color: "#EEE5E9",
       position: "relative"
     };
@@ -85,7 +85,7 @@ export default class List extends React.Component {
       paddingTop: "15px",
       minHeight: "200px"
     };
-    
+
     return (
       <div style={container}>
         <div style={heading}>
