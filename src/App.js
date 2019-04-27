@@ -2,39 +2,84 @@ import React from "react";
 import ls from "local-storage";
 
 const Input = props => {
-
   const container = {
-    position: 'fixed',
-    left: '50%',
-    top: '50%',
-    transform: 'translate(-50%, -50%)',
-    height: '100px',
-    width: '200px',
-    backgroundColor: 'pink'
-  }
+    margin: "0 auto",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    paddingLeft: "10px"
+  };
 
+  const inputStyle = {
+    width: "80%",
+    height: "20px",
+    padding: "0"
+  };
+
+  const buttonStyle = {
+    // width: '',
+    height: "25px",
+    background: "pink"
+  };
 
   return (
     <div style={container}>
       <input
         type="text"
+        style={inputStyle}
         id="item"
         name="item"
-        placeholder="What did you want to buy?"
         onChange={props.changeHandler}
       />
-
-      <button onClick={props.clickHandler}>Add</button>
+      <div style={buttonStyle} />
     </div>
   );
 };
 
 const ListItem = props => {
-  const listItemStyle = {
-    listStyle: "none"
+  const item = {
+    listStyle: "none",
+    padding: "0",
+    textDecoration: props.done ? "line-through" : "none",
+    cursor: "pointer"
   };
 
-  return <li style={listItemStyle}>{props.text}</li>;
+  const container = {
+    display: "flex",
+    justifyContent: "space-around",
+    alignItems: "center",
+    paddingBottom: "15px"
+  };
+
+  const checkMark = {
+    visibility: props.done ? "visible" : "hidden",
+    color: "#51ba3f",
+    cursor: "pointer"
+  };
+
+  const deleteIcon = {
+    cursor: "pointer",
+    color: "#f44e42"
+  };
+
+  return (
+    <div style={container}>
+      <i
+        style={checkMark}
+        className="fas fa-check"
+        onClick={() => props.onDoneHandler(props.index)}
+      />
+      <li style={item} onClick={() => props.onDoneHandler(props.index)}>
+        {props.text}
+      </li>
+      <i
+        style={deleteIcon}
+        className="far fa-trash-alt"
+        onClick={() => props.onDeleteHandler(props.index)}
+      />
+    </div>
+  );
 };
 
 class List extends React.Component {
@@ -75,43 +120,85 @@ class List extends React.Component {
     });
   }
 
+  onDeleteHandler(index) {
+    console.log(index);
+    let arr = this.state.list;
+    arr.splice(index, 1);
+    this.setState({
+      ...this.state,
+      list: arr
+    });
+    ls.set(this.props.name, arr);
+  }
+
+  onDoneHandler(index) {
+    let arr = this.state.list;
+    arr[index].done = !arr[index].done;
+    this.setState({
+      ...this.state,
+      list: arr
+    });
+    ls.set(this.props.name, arr);
+  }
+
   render() {
     const container = {
       margin: "0 auto",
       maxWidth: "250px",
-      color: "#EEE5E9"
+      color: "#EEE5E9",
+      position: 'relative'
     };
 
     const heading = {
       display: "flex",
-      justifyContent: "space-between",
+      justifyContent: "center",
       alignItems: "center"
     };
 
-    const title = {};
+    const list = {
+      padding: "0",
+      width: "100%",
+      textAlign: "center",
+      borderRadius: "10px",
+      backgroundColor: "#353535",
+      boxSizing: "border-box",
+      paddingTop: "15px",
+      minHeight: "200px"
+    };
 
     const backButton = {
-      cursor: "pointer"
+      cursor: "pointer",
+      position: 'absolute',
+      top: '20px'
     };
 
     return (
       <div style={container}>
+        <i
+          onClick={this.props.backButtonHandler}
+          style={backButton}
+          className="fas fa-arrow-left"
+        />
         <div style={heading}>
-          <i
-            onClick={this.props.backButtonHandler}
-            style={{ marginRight: "10px" }}
-            className="fas fa-arrow-left"
-          />
           <h3>{this.props.name}</h3>
-          <i className="fas fa-plus-circle" />
+          <div />
         </div>
         <Input
           changeHandler={this.onChangeHandler.bind(this)}
           clickHandler={this.onSaveHandler.bind(this)}
         />
-        <ul>
+        <ul style={list}>
           {this.state.list.map((item, index) => {
-            return <ListItem key={index} text={item.name} />;
+            return (
+              <ListItem
+                key={index}
+                index={index}
+                text={item.name}
+                done={item.done}
+                onDeleteHandler={this.onDeleteHandler.bind(this)}
+                onDoneHandler={this.onDoneHandler.bind(this)}
+              />
+            );
           })}
         </ul>
       </div>
@@ -137,7 +224,6 @@ const Categories = props => {
 
   const iconBackground = {
     borderRadius: "50%",
-    backgroundColor: "pink",
     color: "white",
     height: "30px",
     width: "30px",
@@ -174,11 +260,15 @@ const Categories = props => {
 
   return (
     <div style={container}>
-      <h3 style={header}>Categories</h3>
+      <h3 style={header}>Glowcery</h3>
       <ul style={list}>
         {categories.map((item, index) => {
           return (
-            <li style={listItem} key={index} onClick={() => props.clickHandler(item.name)}>
+            <li
+              style={listItem}
+              key={index}
+              onClick={() => props.clickHandler(item.name)}
+            >
               <div
                 style={{
                   display: "flex",
@@ -206,7 +296,11 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      view: "categories"
+      view: "list",
+      current: {
+        name: "Produce",
+        list: [{ name: "item1", done: false }, { name: "item2", done: false }]
+      }
     };
   }
 
