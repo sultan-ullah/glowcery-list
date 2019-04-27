@@ -209,6 +209,7 @@ class List extends React.Component {
             );
           })}
         </ul>
+        <small>*Click on an item to cross it out</small>
       </div>
     );
   }
