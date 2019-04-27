@@ -5,7 +5,8 @@ const listItem = props => {
     listStyle: "none",
     padding: "0",
     textDecoration: props.done ? "line-through" : "none",
-    cursor: "pointer"
+    cursor: "pointer",
+    width: '200px'
   };
 
   const container = {
