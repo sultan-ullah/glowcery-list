@@ -33,6 +33,6 @@ npm run build
 
 [Demo](https://frosty-kowalevski-439bcc.netlify.com/)
 
-<img src="https://i.ibb.co/Jkf6D1S/Screen-Shot-2019-04-27-at-12-32-57-PM.png" width="500" height="450" alt="Categories page">
+<img src="https://i.ibb.co/Jkf6D1S/Screen-Shot-2019-04-27-at-12-32-57-PM.png" width="400" height="450" alt="Categories page">
 
-<img src="https://i.ibb.co/g69qMRc/Screen-Shot-2019-04-27-at-12-33-32-PM.png" width="500" height="450" alt="List page">
+<img src="https://i.ibb.co/g69qMRc/Screen-Shot-2019-04-27-at-12-33-32-PM.png" width="400" height="450" alt="List page">
