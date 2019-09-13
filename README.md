@@ -1,4 +1,4 @@
-# Glowcery List
+# Grocery List
 A progressive and dynamic shopping list created using ReactJS and the Local Storage web API
 
 ### Usage
